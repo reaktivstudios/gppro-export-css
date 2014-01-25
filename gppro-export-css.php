@@ -55,6 +55,7 @@ class GP_Pro_Export_CSS
 		add_action		(	'admin_init',								array(	$this,	'export_css_file'			)			);
 		add_action		(	'admin_notices',							array(	$this,	'gppro_active_check'		),	10		);
 		add_action		(	'admin_notices',							array(	$this,	'export_css_notices'		)			);
+		add_action		(	'admin_head',								array(	$this,	'export_css_style'			)			);
 
 		// GP Pro specific
 		add_filter		(	'gppro_section_inline_build_settings',		array(	$this,	'export_css_section'		),	15,	2	);
@@ -115,6 +116,22 @@ class GP_Pro_Export_CSS
 		endif;
 
 		return;
+
+	}
+
+	/**
+	 * add CSS to the admin head
+	 *
+	 * @return CSS
+	 */
+	public function export_css_style() {
+
+		$screen	= get_current_screen();
+
+		if ( $screen->base != 'genesis_page_genesis-palette-pro' )
+			return;
+
+		echo '<style media="all" type="text/css">a.gppro-css-export-view{display:block;font-size:10px;line-height:12px;}</style>';
 
 	}
 
@@ -197,7 +214,7 @@ class GP_Pro_Export_CSS
 			return;
 		}
 
-		// get for CSS file
+		// get CSS file
 		$file	= Genesis_Palette_Pro::filebase();
 		if ( ! file_exists( $file['dir'] ) ) {
 			$failure	= menu_page_url( 'genesis-palette-pro', 0 ).'&section=build_settings&export-css=failure&reason=nofile';
@@ -270,6 +287,9 @@ class GP_Pro_Export_CSS
 		$name		= GP_Pro_Helper::get_field_name( $field );
 		$button		= isset( $item['button'] ) ? esc_attr( $item['button'] ) : __( 'Export File', 'gppro-export-css' );
 
+		// get CSS file for link
+		$file	= Genesis_Palette_Pro::filebase();
+
 		// create export URL with nonce
 		$expnonce	= wp_create_nonce( 'gppro_css_export_nonce' );
 
@@ -283,8 +303,14 @@ class GP_Pro_Export_CSS
 					$input	.= '<a name="'.$name.'" id="'.$id.'" href="'.menu_page_url( 'genesis-palette-pro', 0 ).'&gppro-css-export=go&_wpnonce='.$expnonce.'" class="button-primary button-small '.esc_attr( $field ).'">'.$button.'</a>';
 				$input	.= '</span>';
 
-				$input	.= GP_Pro_Setup::get_input_label( $item );
+				$input	.= '<span class="choice-label">';
 
+				$input	.= $item['label'];
+				// handle browser link
+				if ( isset( $file['url'] ) )
+					$input	.= '<a class="gppro-css-export-view" href="'.esc_url( $file['url'] ).'" title="'.__( 'View in browser', 'gppro-export-css' ).'" target="_blank">'.__( 'View in browser', 'gppro-export-css' ).'</a>';
+
+				$input	.= '</span>';
 
 			$input	.= '</div>';
 
