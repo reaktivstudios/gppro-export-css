@@ -28,7 +28,16 @@ This is used to export the complete CSS file from Genesis Design Palette Pro. Do
 
 = How do I use the CSS on another site? =
 
-You would need to upload the CSS to the new site and load it.
+You would need to upload the CSS to the new site and load it. Assuming the CSS file was named `gppro-custom.css` and you uploaded it into your active theme's main folder, the below function would load it.
+
+`
+function gppro_load_css() {
+
+	wp_enqueue_style( 'gppro-css', get_bloginfo('stylesheet_directory') . '/gppro-custom.css', array(), null, 'all' );
+
+}
+add_action ( 'wp_enqueue_scripts', 'gppro_load_css', 10 );
+`
 
 = I loaded the CSS file but nothing happens. Why? =
 

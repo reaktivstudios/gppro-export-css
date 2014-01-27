@@ -227,7 +227,7 @@ class GP_Pro_Export_CSS
 		header( 'Cache-Control: public, must-revalidate' );
 		header( 'Pragma: hack' );
 		header( 'Content-type: text/css; charset=utf-8' );
-		header( 'Content-Disposition: attachment; filename="gppro-export-' . date( 'Ymd-His' ) . '.css"' );
+		header( 'Content-Disposition: attachment; filename="gppro-custom.css"' );
 		header( 'Content-Length: ' . mb_strlen( $output ) );
 		echo $output;
 		exit();
