@@ -24,14 +24,14 @@ Author URI: http://andrewnorcross.com
 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-if( !defined( 'GPCSS_BASE' ) )
-	define( 'GPCSS_BASE', plugin_basename(__FILE__) );
+if( !defined( 'GPXCS_BASE' ) )
+	define( 'GPXCS_BASE', plugin_basename(__FILE__) );
 
-if( !defined( 'GPCSS_DIR' ) )
-	define( 'GPCSS_DIR', dirname( __FILE__ ) );
+if( !defined( 'GPXCS_DIR' ) )
+	define( 'GPXCS_DIR', dirname( __FILE__ ) );
 
-if( !defined( 'GPCSS_VER' ) )
-	define( 'GPCSS_VER', '1.0.0' );
+if( !defined( 'GPXCS_VER' ) )
+	define( 'GPXCS_VER', '1.0.0' );
 
 
 class GP_Pro_Export_CSS
@@ -147,36 +147,33 @@ class GP_Pro_Export_CSS
 		if ( ! isset( $_REQUEST['page'] ) || isset( $_REQUEST['page'] ) && $_REQUEST['page'] !== 'genesis-palette-pro' )
 			return;
 
+		// check our CSS export action
+		if ( ! isset( $_REQUEST['export-css'] ) )
+			return;
+
+		// check for non failure
+		if ( isset( $_REQUEST['export-css'] ) && $_REQUEST['export-css'] != 'failure' )
+			return;
+
 		// check for failure
-		if ( isset( $_REQUEST['export-css'] ) && isset( $_REQUEST['reason'] ) && $_REQUEST['export-css'] == 'failure' ) {
+		if ( isset( $_REQUEST['export-css'] ) && $_REQUEST['export-css'] == 'failure' ) {
+
+			// set a default message
+			$message	= __( 'There was an error with your export. Please try again later.', 'gppro-export-css' );
 
 			// no data stored
-			if ( $_REQUEST['reason'] == 'nodata' ) {
-				echo '<div id="message" class="error">';
-				echo '<p>'.__( 'No settings data has been saved. Please save your settings and try again.', 'gppro-export-css' ).'</p>';
-				echo '</div>';
-
-				return;
-			}
+			if ( $_REQUEST['reason'] == 'nodata' )
+				$message	= __( 'No settings data has been saved. Please save your settings and try again.', 'gppro-export-css' );
 
 			// no CSS file present
-			if ( $_REQUEST['reason'] == 'nofile' ) {
-				echo '<div id="message" class="error">';
-				echo '<p>'.__( 'No CSS file exists to export. Please save your settings and try again.', 'gppro-export-css' ).'</p>';
-				echo '</div>';
+			if ( $_REQUEST['reason'] == 'nofile' )
+				$message	= __( 'No CSS file exists to export. Please save your settings and try again.', 'gppro-export-css' );
 
-				return;
-			}
 
-			// unknown reason
-			if ( $_REQUEST['reason'] !== 'nodata' && $_REQUEST['reason'] !== 'nofile' ) {
-
-				echo '<div id="message" class="error">';
-				echo '<p>'.__( 'There was an error with your export. Please try again later.', 'gppro-export-css' ).'</p>';
-				echo '</div>';
-
-				return;
-			}
+			// return the message
+			echo '<div id="message" class="error">';
+			echo '<p>'.esc_attr( $message ).'</p>';
+			echo '</div>';
 
 			return;
 
@@ -283,6 +280,22 @@ class GP_Pro_Export_CSS
 		if ( ! $field || ! $item )
 			return;
 
+		// first check for the data
+		$saveddata	= get_option( 'gppro-settings' );
+
+		if ( ! $saveddata ) :
+
+			$input	= '';
+
+			$input	.= '<div class="gppro-input gppro-description-input">';
+				$input	.= '<p><span class="description">'.__( 'No data has been saved. Please save your settings before attempting to export.', 'gppro-export-css' ).'</span></p>';
+			$input	.= '</div>';
+
+			return $input;
+
+		endif;
+
+
 		$id			= GP_Pro_Helper::get_field_id( $field );
 		$name		= GP_Pro_Helper::get_field_name( $field );
 		$button		= isset( $item['button'] ) ? esc_attr( $item['button'] ) : __( 'Export File', 'gppro-export-css' );
@@ -304,10 +317,10 @@ class GP_Pro_Export_CSS
 				$input	.= '</span>';
 
 				$input	.= '<span class="choice-label">';
-
 				$input	.= $item['label'];
+
 				// handle browser link
-				if ( isset( $file['url'] ) )
+				if ( file_exists( $file['url'] ) )
 					$input	.= '<a class="gppro-css-export-view" href="'.esc_url( $file['url'] ).'" title="'.__( 'View in browser', 'gppro-export-css' ).'" target="_blank">'.__( 'View in browser', 'gppro-export-css' ).'</a>';
 
 				$input	.= '</span>';

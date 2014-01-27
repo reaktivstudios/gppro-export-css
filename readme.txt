@@ -1,5 +1,7 @@
 === Genesis Design Palette Pro - Export CSS ===
 Contributors: norcross, reaktivstudios
+Donate link: http://andrewnorcross.com/donate
+Tags: genesis, genesis design palette pro
 Requires at least: 3.7
 Tested up to: 3.8.1
 Stable tag: 1.0.0
@@ -10,7 +12,7 @@ Adds a button to the Design Palette Pro settings tab to export a raw CSS file
 
 == Description ==
 
-Adds a button to the Design Palette Pro settings tab to export a raw CSS file. Requires the [Genesis Design Palette Pro](http://genesisdesignpro.com/ "Genesis Design Palette Pro") plugin.
+Adds a button to the Design Palette Pro settings tab to export a raw CSS file. Requires the [Genesis Design Palette Pro](https://genesisdesignpro.com/ "Genesis Design Palette Pro") plugin.
 
 
 == Installation ==
@@ -22,12 +24,37 @@ Adds a button to the Design Palette Pro settings tab to export a raw CSS file. R
 
 = What do I do with this? =
 
-Install and activate it.
+This is used to export the complete CSS file from Genesis Design Palette Pro. Do with it as you please, it's your CSS.
+
+= How do I use the CSS on another site? =
+
+You would need to upload the CSS to the new site and load it.
+
+= I loaded the CSS file but nothing happens. Why? =
+
+The CSS data includes a custom body class `gppro-custom` that needs to be present for the browser to recognize it. Design Palette Pro does this automatically, but if you are loading the exported CSS file somewhere else you will need to add it yourself. You can put the below function in your theme.
+
+`
+function gpppro_body_class( $classes ) {
+	$classes[]	= 'gppro-custom';
+
+	return $classes;
+}
+add_filter ( 'body_class', 'gpppro_body_class' );
+`
+
 
 == Screenshots ==
 
-== Changelog ==
+1. The export button
 
+== Changelog ==
 
 = 1.0.0 =
 * Initial release
+
+
+== Upgrade Notice ==
+
+= 1.0.0 =
+Initial release
