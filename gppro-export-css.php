@@ -161,6 +161,10 @@ class GP_Pro_Export_CSS
 			// set a default message
 			$message	= __( 'There was an error with your export. Please try again later.', 'gppro-export-css' );
 
+			// no parent class present
+			if ( $_REQUEST['reason'] == 'noclass' )
+				$message	= __( 'The main Genesis Design Palette Pro files are not present.', 'gppro-export-css' );
+
 			// no data stored
 			if ( $_REQUEST['reason'] == 'nodata' )
 				$message	= __( 'No settings data has been saved. Please save your settings and try again.', 'gppro-export-css' );
@@ -206,6 +210,14 @@ class GP_Pro_Export_CSS
 		// if settings empty, bail
 		if ( empty( $current ) ) {
 			$failure	= menu_page_url( 'genesis-palette-pro', 0 ).'&section=build_settings&export-css=failure&reason=nodata';
+			wp_safe_redirect( $failure );
+
+			return;
+		}
+
+		// check for class
+		if ( ! class_exists( 'Genesis_Palette_Pro' ) ) {
+			$failure	= menu_page_url( 'genesis-palette-pro', 0 ).'&section=build_settings&export-css=failure&reason=noclass';
 			wp_safe_redirect( $failure );
 
 			return;

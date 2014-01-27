@@ -32,9 +32,7 @@ You would need to upload the CSS to the new site and load it. Assuming the CSS f
 
 `
 function gppro_load_css() {
-
 	wp_enqueue_style( 'gppro-css', get_bloginfo('stylesheet_directory') . '/gppro-custom.css', array(), null, 'all' );
-
 }
 add_action ( 'wp_enqueue_scripts', 'gppro_load_css', 10 );
 `
