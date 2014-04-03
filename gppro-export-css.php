@@ -69,8 +69,10 @@ class GP_Pro_Export_CSS
 	 */
 
 	public static function getInstance() {
-		if ( !self::$instance )
+
+		if ( !self::$instance ) {
 			self::$instance = new self;
+		}
 		return self::$instance;
 	}
 
@@ -96,8 +98,9 @@ class GP_Pro_Export_CSS
 
 		$screen = get_current_screen();
 
-		if ( $screen->parent_file !== 'plugins.php' )
+		if ( $screen->parent_file !== 'plugins.php' ) {
 			return;
+		}
 
 		// look for our flag
 		$coreactive	= get_option( 'gppro_core_active' );
@@ -128,8 +131,9 @@ class GP_Pro_Export_CSS
 
 		$screen	= get_current_screen();
 
-		if ( $screen->base != 'genesis_page_genesis-palette-pro' )
+		if ( $screen->base != 'genesis_page_genesis-palette-pro' ) {
 			return;
+		}
 
 		echo '<style media="all" type="text/css">a.gppro-css-export-view{display:block;font-size:10px;line-height:12px;}</style>';
 
