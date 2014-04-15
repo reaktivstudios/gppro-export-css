@@ -24,14 +24,17 @@ Author URI: http://andrewnorcross.com
 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-if( !defined( 'GPXCS_BASE' ) )
+if( ! defined( 'GPXCS_BASE' ) ) {
 	define( 'GPXCS_BASE', plugin_basename(__FILE__) );
+}
 
-if( !defined( 'GPXCS_DIR' ) )
+if( ! defined( 'GPXCS_DIR' ) ) {
 	define( 'GPXCS_DIR', dirname( __FILE__ ) );
+}
 
-if( !defined( 'GPXCS_VER' ) )
+if( ! defined( 'GPXCS_VER' ) ) {
 	define( 'GPXCS_VER', '1.0.0' );
+}
 
 
 class GP_Pro_Export_CSS
@@ -102,8 +105,8 @@ class GP_Pro_Export_CSS
 			return;
 		}
 
-		// look for our flag
-		$coreactive	= get_option( 'gppro_core_active' );
+		// run the active check
+		$coreactive	= class_exists( 'Genesis_Palette_Pro' ) ? Genesis_Palette_Pro::check_active() : false;
 
 		// not active. show message
 		if ( ! $coreactive ) :
