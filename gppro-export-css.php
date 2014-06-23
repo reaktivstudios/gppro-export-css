@@ -4,7 +4,7 @@ Plugin Name: Genesis Design Palette Pro - Export CSS
 Plugin URI: https://genesisdesignpro.com/
 Description: Adds a button to export raw CSS file
 Author: Reaktiv Studios
-Version: 1.0.0
+Version: 1.0.1
 Requires at least: 3.7
 Author URI: http://andrewnorcross.com
 */
@@ -33,7 +33,7 @@ if( ! defined( 'GPXCS_DIR' ) ) {
 }
 
 if( ! defined( 'GPXCS_VER' ) ) {
-	define( 'GPXCS_VER', '1.0.0' );
+	define( 'GPXCS_VER', '1.0.1' );
 }
 
 
@@ -169,16 +169,19 @@ class GP_Pro_Export_CSS
 			$message	= __( 'There was an error with your export. Please try again later.', 'gppro-export-css' );
 
 			// no parent class present
-			if ( $_REQUEST['reason'] == 'noclass' )
+			if ( $_REQUEST['reason'] == 'noclass' ) {
 				$message	= __( 'The main Genesis Design Palette Pro files are not present.', 'gppro-export-css' );
+			}
 
 			// no data stored
-			if ( $_REQUEST['reason'] == 'nodata' )
+			if ( $_REQUEST['reason'] == 'nodata' ) {
 				$message	= __( 'No settings data has been saved. Please save your settings and try again.', 'gppro-export-css' );
+			}
 
 			// no CSS file present
-			if ( $_REQUEST['reason'] == 'nofile' )
+			if ( $_REQUEST['reason'] == 'nofile' ) {
 				$message	= __( 'No CSS file exists to export. Please save your settings and try again.', 'gppro-export-css' );
+			}
 
 
 			// return the message
@@ -208,8 +211,9 @@ class GP_Pro_Export_CSS
 
 		// check nonce
 		$nonce = $_REQUEST['_wpnonce'];
-		if ( ! wp_verify_nonce( $nonce, 'gppro_css_export_nonce' ) )
+		if ( ! wp_verify_nonce( $nonce, 'gppro_css_export_nonce' ) ) {
 			return;
+		}
 
 		// get current settings
 		$current	= get_option( 'gppro-settings' );
@@ -296,23 +300,20 @@ class GP_Pro_Export_CSS
 
 	static function export_css_input( $field, $item ) {
 
-		if ( ! $field || ! $item )
+		if ( ! $field || ! $item ) {
 			return;
+		}
 
 		// first check for the data
-		$saveddata	= get_option( 'gppro-settings' );
+		$saved	= get_option( 'gppro-settings' );
 
-		if ( ! $saveddata ) :
+		if ( empty( $saved ) ) {
 
-			$input	= '';
+			$text	= __( 'No data has been saved. Please save your settings before attempting to export.', 'gppro-export-css' );
 
-			$input	.= '<div class="gppro-input gppro-description-input">';
-				$input	.= '<p><span class="description">'.__( 'No data has been saved. Please save your settings before attempting to export.', 'gppro-export-css' ).'</span></p>';
-			$input	.= '</div>';
+			return '<div class="gppro-input gppro-description-input"><p class="description">' . esc_attr( $text ) . '</p></div>';
 
-			return $input;
-
-		endif;
+		}
 
 
 		$id			= GP_Pro_Helper::get_field_id( $field );
@@ -339,8 +340,9 @@ class GP_Pro_Export_CSS
 				$input	.= $item['label'];
 
 				// handle browser link
-				if ( file_exists( $file['url'] ) )
+				if ( file_exists( $file['url'] ) ) {
 					$input	.= '<a class="gppro-css-export-view" href="'.esc_url( $file['url'] ).'" title="'.__( 'View in browser', 'gppro-export-css' ).'" target="_blank">'.__( 'View in browser', 'gppro-export-css' ).'</a>';
+				}
 
 				$input	.= '</span>';
 
