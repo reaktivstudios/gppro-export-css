@@ -3,8 +3,8 @@ Contributors: norcross, jjeaton, reaktivstudios
 Donate link: http://andrewnorcross.com/donate
 Tags: genesis, genesis design palette pro
 Requires at least: 3.7
-Tested up to: 3.9.1
-Stable tag: 1.0.1
+Tested up to: 4.0
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -56,6 +56,10 @@ add_filter ( 'body_class', 'gpppro_body_class' );
 1. The export button
 
 == Changelog ==
+
+= 1.0.2 =
+* Updated UI markup to match core plugin changes
+* Added 'view in browser' link
 
 = 1.0.1 =
 * Fixed bug with export button not displaying
