@@ -24,10 +24,11 @@
 	<config name="minimum_supported_wp_version" value="4.5"/>
 	<rule ref="WordPress">
 		<exclude name="WordPress.VIP"/>
+		<exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
 	</rule>
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
-			<property name="prefixes" type="array" value="GP_Pro_Export"/>
+			<property name="prefixes" type="array" value="GP_Pro_Export, GPXCS"/>
 		</properties>
 	</rule>
 	<rule ref="WordPress.WP.I18n">
