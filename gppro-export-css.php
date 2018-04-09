@@ -223,16 +223,14 @@ class GP_Pro_Export_CSS
 			return;
 		}
 
-		// get CSS file
-		$file	= Genesis_Palette_Pro::filebase();
-		if ( ! file_exists( $file['dir'] ) ) {
+		$output = get_theme_mod( 'dpp_styles' );
+
+		if ( empty( $output ) ) {
 			$failure	= menu_page_url( 'genesis-palette-pro', 0 ).'&section=build_settings&export-css=failure&reason=nofile';
 			wp_safe_redirect( $failure );
 
 			return;
 		}
-
-		$output = file_get_contents( $file['dir'] );
 
 		//* Prepare and send the export file to the browser
 		header( 'Content-Description: File Transfer' );
@@ -241,7 +239,7 @@ class GP_Pro_Export_CSS
 		header( 'Content-type: text/css; charset=utf-8' );
 		header( 'Content-Disposition: attachment; filename="gppro-custom.css"' );
 		header( 'Content-Length: ' . mb_strlen( $output ) );
-		echo $output;
+		echo str_replace( '&quot;', '"', esc_html( $output ) );
 		exit();
 
 	}
@@ -306,10 +304,10 @@ class GP_Pro_Export_CSS
 		$button		= ! empty( $item['button'] ) ? esc_attr( $item['button'] ) : __( 'Export File', 'gppro-export-css' );
 
 		// get CSS file for link
-		$file	= Genesis_Palette_Pro::filebase();
+		$file_key = get_theme_mod( 'dpp_file_key' );
 
 		// create export URL with nonce
-		$expnonce	= wp_create_nonce( 'gppro_css_export_nonce' );
+		$expnonce = wp_create_nonce( 'gppro_css_export_nonce' );
 
 		// set the empty
 		$input	= '';
@@ -319,8 +317,9 @@ class GP_Pro_Export_CSS
 			$input	.= '<div class="gppro-input-item gppro-input-wrap"><p class="description">';
 				$input	.= esc_attr( $item['label'] );
 				// handle browser link
-				if ( file_exists( $file['dir'] ) && ! empty( $file['url'] ) ) {
-					$input	.= '<a class="gppro-css-export-view" href="' . esc_url( $file['url'] ) . '" title="' . __( 'View in browser', 'gppro-export-css' ) . '" target="_blank">';
+				if ( ! empty( $file_key ) ) {
+					$url = sprintf( '%1$sdpp-custom-styles-%2$s', trailingslashit( get_site_url() ), $file_key );
+					$input	.= '<a class="gppro-css-export-view" href="' . esc_url( $url ) . '" title="' . __( 'View in browser', 'gppro-export-css' ) . '" target="_blank">';
 					$input	.= '<i class="dashicons dashicons-admin-site"></i>';
 					$input	.= '</a>';
 				}
