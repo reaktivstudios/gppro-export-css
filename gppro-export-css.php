@@ -6,13 +6,13 @@
  * Author: Reaktiv Studios
  * Version: 1.0.2
  * Requires at least: 3.7
- * Author URI: http://andrewnorcross.com
+ * Author URI: https://reaktivstudios.com/
  *
  * @package gppro-export-css
  */
 
 /**
- * Copyright 2014 Andrew Norcross
+ * Copyright 2018 Reaktiv Studios, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -127,44 +127,42 @@ class GP_Pro_Export_CSS {
 
 	/**
 	 * Display messages if export failure.
-	 *
-	 * @return mixed
 	 */
 	public function export_css_notices() {
 
 		// First check to make sure we're on our settings.
-		if ( ! isset( $_REQUEST['page'] ) || isset( $_REQUEST['page'] ) && 'genesis-palette-pro' !== $_REQUEST['page'] ) { // WPCS: csrf ok.
+		if ( ! isset( $_GET['page'] ) || isset( $_GET['page'] ) && 'genesis-palette-pro' !== $_GET['page'] ) { // WPCS: csrf ok.
 			return;
 		}
 
 		// Check our CSS export action.
-		if ( ! isset( $_REQUEST['export-css'] ) ) { // WPCS: csrf ok.
+		if ( ! isset( $_GET['export-css'] ) ) { // WPCS: csrf ok.
 			return;
 		}
 
 		// Check for non failure.
-		if ( isset( $_REQUEST['export-css'] ) && 'failure' !== $_REQUEST['export-css'] ) { // WPCS: csrf ok.
+		if ( isset( $_GET['export-css'] ) && 'failure' !== $_GET['export-css'] ) { // WPCS: csrf ok.
 			return;
 		}
 
 		// Check for failure.
-		if ( isset( $_REQUEST['export-css'] ) && 'failure' === $_REQUEST['export-css'] ) { // WPCS: csrf ok.
+		if ( isset( $_GET['export-css'] ) && 'failure' === $_GET['export-css'] ) { // WPCS: csrf ok.
 
 			// Set a default message.
 			$message = __( 'There was an error with your export. Please try again later.', 'gppro-export-css' );
 
 			// No parent class present.
-			if ( 'noclass' === $_REQUEST['reason'] ) { // WPCS: csrf ok.
+			if ( 'noclass' === $_GET['reason'] ) { // WPCS: csrf ok.
 				$message = __( 'The main Genesis Design Palette Pro files are not present.', 'gppro-export-css' );
 			}
 
 			// No data stored.
-			if ( 'nodata' === $_REQUEST['reason'] ) { // WPCS: csrf ok.
+			if ( 'nodata' === $_GET['reason'] ) { // WPCS: csrf ok.
 				$message = __( 'No settings data has been saved. Please save your settings and try again.', 'gppro-export-css' );
 			}
 
 			// No CSS file present.
-			if ( 'nofile' === $_REQUEST['reason'] ) { // WPCS: csrf ok.
+			if ( 'nofile' === $_GET['reason'] ) { // WPCS: csrf ok.
 				$message = __( 'No CSS file exists to export. Please save your settings and try again.', 'gppro-export-css' );
 			}
 
@@ -172,8 +170,6 @@ class GP_Pro_Export_CSS {
 			echo '<div id="message" class="error">';
 			echo '<p>' . esc_attr( $message ) . '</p>';
 			echo '</div>';
-
-			return;
 		}
 	}
 
@@ -184,12 +180,12 @@ class GP_Pro_Export_CSS {
 	 */
 	public function export_css_file() {
 		// Check nonce.
-		if ( empty( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( $_REQUEST['_wpnonce'], 'gppro_css_export_nonce' ) ) {
+		if ( empty( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], 'gppro_css_export_nonce' ) ) {
 			return;
 		}
 
 		// Check page and query string.
-		if ( ! isset( $_REQUEST['gppro-css-export'] ) || isset( $_REQUEST['gppro-css-export'] ) && 'go' !== $_REQUEST['gppro-css-export'] ) {
+		if ( ! isset( $_GET['gppro-css-export'] ) || isset( $_GET['gppro-css-export'] ) && 'go' !== $_GET['gppro-css-export'] ) {
 			return;
 		}
 
@@ -216,7 +212,7 @@ class GP_Pro_Export_CSS {
 
 		if ( empty( $output ) ) {
 			$failure = menu_page_url( 'genesis-palette-pro', 0 ) . '&section=build_settings&export-css=failure&reason=nofile';
-			wp_safe_redirect( $failure );
+			wp_safe_redirect( esc_url( $failure ) );
 
 			return;
 		}
@@ -228,8 +224,30 @@ class GP_Pro_Export_CSS {
 		header( 'Content-type: text/css; charset=utf-8' );
 		header( 'Content-Disposition: attachment; filename="gppro-custom.css"' );
 		header( 'Content-Length: ' . mb_strlen( $output ) );
-		echo str_replace( '&quot;', '"', esc_html( $output ) ); // WPCS: xss ok.
+		echo $this->escape_css( $output ); // WPCS: xss ok.
 		exit();
+	}
+
+	/**
+	 * Take the CSS data stored in the settings row and escape it for proper output.
+	 *
+	 * @param  string $data the sanitized CSS data stored.
+	 *
+	 * @return string $data the escaped and encoded CSS data to output.
+	 */
+	public function escape_css( $data = '' ) {
+
+		// Convert single quotes to double quotes.
+		$data = str_replace( '\'', '"', $data );
+
+		// Escape it.
+		$data = esc_attr( $data );
+
+		// Now decode it.
+		$data = html_entity_decode( $data );
+
+		// And return it, filtered.
+		return apply_filters( 'gppro_export_css_escaped', $data );
 	}
 
 
@@ -259,7 +277,7 @@ class GP_Pro_Export_CSS {
 		// Display message without saved options.
 		if ( empty( $saved ) ) {
 			$text = __( 'No data has been saved. Please save your settings before attempting to export.', 'gppro-export-css' );
-			return '<div class="gppro-input gppro-description-input"><p class="description">' . esc_attr( $text ) . '</p></div>';
+			echo '<div class="gppro-input gppro-description-input"><p class="description">' . esc_attr( $text ) . '</p></div>';
 		}
 
 		// Get my values.

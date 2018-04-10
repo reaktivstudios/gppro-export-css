@@ -28,7 +28,7 @@
 	</rule>
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
-			<property name="prefixes" type="array" value="GP_Pro_Export, GPXCS"/>
+			<property name="prefixes" type="array" value="GP_Pro_Export, GPXCS, gppro_export"/>
 		</properties>
 	</rule>
 	<rule ref="WordPress.WP.I18n">
