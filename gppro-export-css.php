@@ -61,7 +61,7 @@ class GP_Pro_Export_CSS
 		add_action		(	'admin_head',								array(	$this,	'export_css_style'			)			);
 
 		// GP Pro specific
-		add_filter		(	'gppro_section_inline_build_settings',		array(	$this,	'export_css_section'		),	15,	2	);
+		add_filter		(	'dpp_settings',		array(	$this,	'export_css_section' ),	15,	2	);
 	}
 
 	/**
@@ -223,16 +223,14 @@ class GP_Pro_Export_CSS
 			return;
 		}
 
-		// get CSS file
-		$file	= Genesis_Palette_Pro::filebase();
-		if ( ! file_exists( $file['dir'] ) ) {
+		$output = get_theme_mod( 'dpp_styles' );
+
+		if ( empty( $output ) ) {
 			$failure	= menu_page_url( 'genesis-palette-pro', 0 ).'&section=build_settings&export-css=failure&reason=nofile';
 			wp_safe_redirect( $failure );
 
 			return;
 		}
-
-		$output = file_get_contents( $file['dir'] );
 
 		//* Prepare and send the export file to the browser
 		header( 'Content-Description: File Transfer' );
@@ -241,7 +239,7 @@ class GP_Pro_Export_CSS
 		header( 'Content-type: text/css; charset=utf-8' );
 		header( 'Content-Disposition: attachment; filename="gppro-custom.css"' );
 		header( 'Content-Length: ' . mb_strlen( $output ) );
-		echo $output;
+		echo str_replace( '&quot;', '"', esc_html( $output ) );
 		exit();
 
 	}
@@ -250,15 +248,22 @@ class GP_Pro_Export_CSS
 	/**
 	 * add new option for exporting CSS
 	 *
-	 * @return string $items
+	 * @param  array $settings The DPP settings array.
+	 * @return array
 	 */
-	public function export_css_section( $items, $class ) {
+	public function export_css_section( $settings ) {
 
-		// add section header for export
+		$settings['gppro-export-css'] = array(
+			'label'       => __( 'Export Raw CSS', 'gppro-export-css' ),
+			'section'     => 'utilities',
+			'callback'    => array( $this, 'export_css_input' ),
+		);
+
+		/* add section header for export
 		$items['section-break-css-export']	= array(
 			'break'	=> array(
 				'type'	=> 'full',
-				'title'	=> __( 'Export Raw CSS', 'gppro-export-css' ),
+				'title'	=> __( '', 'gppro-export-css' ),
 				'text'	=> __( 'Download a stand-alone CSS file', 'gppro-export-css' ),
 			),
 		);
@@ -271,26 +276,21 @@ class GP_Pro_Export_CSS
 					'label'		=> __( 'Download CSS file', 'gppro-export-css' ),
 					'button'	=> __( 'Export CSS', 'gppro-export-css' ),
 					'input'		=> 'custom',
-					'callback'	=> array( $this, 'export_css_input' )
+					'callback'	=>
 				),
 			),
-		);
+		);*/
 
-		return $items;
+		return $settings;
 
 	}
 
 	/**
-	 * create input field for CSS export
+	 * Create input field for CSS export.
 	 *
 	 * @return
 	 */
-	static function export_css_input( $field, $item ) {
-
-		// bail if items missing
-		if ( ! $field || ! $item ) {
-			return;
-		}
+	static function export_css_input() {
 
 		// first check for the data
 		$saved	= get_option( 'gppro-settings' );
@@ -301,37 +301,41 @@ class GP_Pro_Export_CSS
 		}
 
 		// get my values
-		$id			= GP_Pro_Helper::get_field_id( $field );
-		$name		= GP_Pro_Helper::get_field_name( $field );
-		$button		= ! empty( $item['button'] ) ? esc_attr( $item['button'] ) : __( 'Export File', 'gppro-export-css' );
+		$id			= 'gppro-export-css';
+		$name		= 'gppro-export-css';
+		$button		= __( 'Export File', 'gppro-export-css' );
 
 		// get CSS file for link
-		$file	= Genesis_Palette_Pro::filebase();
+		$file_key = get_theme_mod( 'dpp_file_key' );
 
 		// create export URL with nonce
-		$expnonce	= wp_create_nonce( 'gppro_css_export_nonce' );
+		$expnonce = wp_create_nonce( 'gppro_css_export_nonce' );
 
 		// set the empty
 		$input	= '';
 		// begin markup
 		$input	.= '<div class="gppro-input gppro-css-export-input gppro-setting-input">';
-			// handle label with optional CSS file link
-			$input	.= '<div class="gppro-input-item gppro-input-wrap"><p class="description">';
-				$input	.= esc_attr( $item['label'] );
-				// handle browser link
-				if ( file_exists( $file['dir'] ) && ! empty( $file['url'] ) ) {
-					$input	.= '<a class="gppro-css-export-view" href="' . esc_url( $file['url'] ) . '" title="' . __( 'View in browser', 'gppro-export-css' ) . '" target="_blank">';
-					$input	.= '<i class="dashicons dashicons-admin-site"></i>';
-					$input	.= '</a>';
-				}
 
-			$input	.= '</p></div>';
+
+		// handle browser link
+		if ( ! empty( $file_key ) ) {
+			// handle label with optional CSS file link
+			$input .= '<div class="gppro-input-item gppro-input-wrap"><p class="description">';
+
+			$input .= esc_html__( 'View CSS file', 'gppro-export-css' );
+			$url   = sprintf( '%1$sdpp-custom-styles-%2$s', trailingslashit( get_site_url() ), $file_key );
+			$input .= '<a class="gppro-css-export-view" href="' . esc_url( $url ) . '" title="' . __( 'View in browser', 'gppro-export-css' ) . '" target="_blank">';
+			$input .= '<i class="dashicons dashicons-admin-site"></i>';
+			$input .= '</a>';
+
+			$input .= '</p></div>';
+		}
 
 			// display button
 			$input	.= '<div class="gppro-input-item gppro-input-label choice-label">';
 				$input	.= '<span class="gppro-settings-button">';
 
-				$input	.= '<a name="' . esc_attr( $name ) . '" id="' . sanitize_html_class( $id ) . '" href="' . menu_page_url( 'genesis-palette-pro', 0 ) . '&gppro-css-export=go&_wpnonce=' . $expnonce . '" class="button-primary button-small ' . esc_attr( $field ) . '">' . $button . '</a>';
+				$input	.= '<a name="' . esc_attr( $name ) . '" id="' . sanitize_html_class( $id ) . '" href="' . menu_page_url( 'genesis-palette-pro', 0 ) . '&gppro-css-export=go&_wpnonce=' . $expnonce . '" class="button-primary button-small">' . $button . '</a>';
 
 				$input	.= '</span>';
 			$input .= '</div>';
@@ -340,7 +344,7 @@ class GP_Pro_Export_CSS
 		$input	.= '</div>';
 
 		// send it back
-		return $input;
+		echo $input; // WPCS: xss ok.
 
 	}
 
