@@ -6,7 +6,7 @@
  * Author: Reaktiv Studios
  * Version: 1.1
  * Requires at least: 3.7
- * Author URI: https://reaktivstudios.com/
+ * Author URI: https://genesisdesignpro.com
  *
  * @package gppro-export-css
  */
