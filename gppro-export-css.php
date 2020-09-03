@@ -204,7 +204,7 @@ class GP_Pro_Export_CSS {
 		// Check for class.
 		if ( ! class_exists( 'Genesis_Palette_Pro' ) ) {
 			$failure = menu_page_url( 'genesis-palette-pro', 0 ) . '&section=build_settings&export-css=failure&reason=noclass';
-			wp_safe_redirect($failure);
+			wp_safe_redirect( $failure );
 			exit;
 		}
 
@@ -212,7 +212,7 @@ class GP_Pro_Export_CSS {
 		$file = Genesis_Palette_Pro::filebase();
 		if ( ! file_exists( $file['dir'] ) ) {
 			$failure = menu_page_url( 'genesis-palette-pro', 0 ) . '&section=build_settings&export-css=failure&reason=nofile';
-			wp_safe_redirect($failure);
+			wp_safe_redirect( $failure );
 			exit;
 		}
 
