@@ -4,7 +4,7 @@
  * Plugin URI: https://genesisdesignpro.com/
  * Description: Adds a button to export raw CSS file
  * Author: Reaktiv Studios
- * Version: 1.1
+ * Version: 1.1.1
  * Requires at least: 3.7
  * Author URI: https://genesisdesignpro.com
  *
@@ -37,7 +37,7 @@ if ( ! defined( 'GPXCS_DIR' ) ) {
 }
 
 if ( ! defined( 'GPXCS_VER' ) ) {
-	define( 'GPXCS_VER', '1.1' );
+	define( 'GPXCS_VER', '1.1.1' );
 }
 
 /**

@@ -57,6 +57,12 @@ add_filter ( 'body_class', 'gpppro_body_class' );
 
 ## Changelog
 
+### 1.1.1
+* WordPress Code Standard fixes. All under the hood changes.
+
+### 1.1
+* Updated to work with Design Palette Pro v1.4+
+
 ### 1.0.2
 * Updated UI markup to match core plugin changes
 * Added 'view in browser' link
